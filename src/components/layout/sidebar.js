@@ -21,7 +21,7 @@ const Sidebar = () => {
                 {/* <!-- Brand Logo --> */}
                 <a href="index3.html" class="brand-link">
                     <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style={{ opacity: "0.8" }} />
-                    <span class="brand-text font-weight-light">AdminLTE 3</span>
+                    <span class="brand-text font-weight-light">REACT ADMIN</span>
                 </a>
 
                 {/* <!-- Sidebar --> */}
@@ -108,7 +108,7 @@ const Sidebar = () => {
                                 </a>
                                 <ul class="nav nav-treeview">
                                     <li class="nav-item">
-                                        <a href="./index.html" class="nav-link">
+                                        <a href="/category" class="nav-link">
                                             <i class="nav-icon fas fa-folder"></i>
                                             <p>Category</p>
                                         </a>

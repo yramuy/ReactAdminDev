@@ -6,6 +6,8 @@ import Dashboard from "./components/layout/dashboard";
 import Users from "./components/pages/users";
 import Login from "./components/pages/login";
 import Logout from "./components/logout";
+import Category from "./components/pages/category";
+import Signup from "./components/pages/signup";
 
 function App() {
   
@@ -15,8 +17,10 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/users" element={<Users />} />
+          <Route path="/category" element={<Category />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/register" element={<Signup />} />
         </Routes>
       </BrowserRouter>
     </div>

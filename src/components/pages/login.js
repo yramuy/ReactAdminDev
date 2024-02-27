@@ -40,7 +40,7 @@ const Login = () => {
                 }
             });
         } catch (error) {
-            
+
         }
 
     }
@@ -57,26 +57,36 @@ const Login = () => {
                     <form method="post">
                         <div class="form-group">
                             {/* <label for="username">Username</label> */}
-                            <input type="text" class="form-control" 
-                            id="username" 
-                            name="username" 
-                            value={userName}
-                            onChange={(e) => setUserName(e.target.value)}
-                            placeholder="Email or Mobile Number" required />
+                            <input type="text" class="form-control"
+                                id="username"
+                                name="username"
+                                value={userName}
+                                onChange={(e) => setUserName(e.target.value)}
+                                placeholder="Email or Mobile Number" required />
                         </div>
                         <div class="form-group">
                             {/* <label for="password">Password</label> */}
-                            <input type="password" class="form-control" 
-                            id="password" 
-                            name="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Password" required />
+                            <input type="password" class="form-control"
+                                id="password"
+                                name="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Password" required />
                         </div>
-                        <button type="submit" name="btn_login" class="btn btn-primary btn-block" onClick={handleLogin}>Login</button>
+                        <button type="submit" name="btn_login" class="btn btn-primary btn-block" onClick={handleLogin}>Sign In</button>
 
 
                     </form>
+
+                    <div class="form-group">
+
+                        <p class="mb-1">
+                            <a href="forgot-password.html">I forgot my password</a>
+                        </p>
+                        <p class="mb-0">
+                            <a href="/register" class="text-center">Register a new membership</a>
+                        </p>
+                    </div>
                 </div>
             </div>
         </>
