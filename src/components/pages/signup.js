@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { GetApiService, PostApiService } from "../api";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+
+    const navigate = useNavigate();
 
     const [mobnumber, setMobnumber] = useState('');
     const [mobOtp, setMobOtp] = useState('');
@@ -82,11 +85,17 @@ const Signup = () => {
         });
 
         await PostApiService(url, body).then((data) => {
-
+            if (data.status === 1) {
+                navigate('/login');
+            } else {
+                setFlag(true);
+                sessionStorage.setItem('msg', data.message);
+            }
         });
     }
 
     const handleState = async (stateId) => {
+        setState(stateId);
         const url = '/BillsPayeApis/v1/citiesByState';
         const body = JSON.stringify({
             state_id: stateId
@@ -96,6 +105,8 @@ const Signup = () => {
             setCities(data.cities);
         });
     }
+
+    console.log('city : ',city )
 
     return (
         <>
@@ -137,6 +148,8 @@ const Signup = () => {
                                             <div class="col-6">
                                                 <input type="text"
                                                     class="form-control"
+                                                    value={fname}
+                                                    onChange={(e) => setFname(e.target.value)}
                                                     placeholder="First name" required />
 
                                             </div>
@@ -144,12 +157,19 @@ const Signup = () => {
                                             <div class="col-6 mb-3">
                                                 <input type="text"
                                                     class="form-control"
+                                                    value={lname}
+                                                    onChange={(e) => setLname(e.target.value)}
                                                     placeholder="Last name" required />
 
                                             </div>
                                         </div>
                                         <div class="input-group mb-3">
-                                            <input type="email" class="form-control" placeholder="Email" required />
+                                            <input type="email"
+                                                class="form-control"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                placeholder="Email"
+                                                required />
                                             <div class="input-group-append">
                                                 <div class="input-group-text">
                                                     <span class="fas fa-envelope"></span>
@@ -157,7 +177,12 @@ const Signup = () => {
                                             </div>
                                         </div>
                                         <div class="input-group mb-3">
-                                            <input type="password" class="form-control" placeholder="Password" required />
+                                            <input type="password"
+                                                class="form-control"
+                                                placeholder="Password"
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                required />
                                             <div class="input-group-append">
                                                 <div class="input-group-text">
                                                     <span class="fas fa-lock"></span>
@@ -165,7 +190,9 @@ const Signup = () => {
                                             </div>
                                         </div>
                                         <div class="input-group mb-3">
-                                            <select className="form-control" required onChange={(e) => handleState(e.target.value)}>
+                                            <select className="form-control"
+                                                onChange={(e) => handleState(e.target.value)}
+                                                required>
                                                 <option value="">--Select State--</option>
                                                 {
                                                     states.map((sts) => (
@@ -180,7 +207,9 @@ const Signup = () => {
                                             </div>
                                         </div>
                                         <div class="input-group mb-3">
-                                            <select className="form-control" required>
+                                            <select className="form-control"
+                                                onChange={(e) => setCity(e.target.value)}
+                                                required>
                                                 <option value="">--Select City--</option>
                                                 {
                                                     cities.map((ct) => (
@@ -195,7 +224,12 @@ const Signup = () => {
                                             </div>
                                         </div>
                                         <div class="input-group mb-3">
-                                            <input type="text" class="form-control" placeholder="Pincode" required />
+                                            <input type="text"
+                                                class="form-control"
+                                                value={pincode}
+                                                onChange={(e) => setPincode(e.target.value)}
+                                                placeholder="Pincode"
+                                                required />
                                             <div class="input-group-append">
                                                 <div class="input-group-text">
                                                     <span class="fas fa-code"></span>
