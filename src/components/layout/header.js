@@ -1,15 +1,18 @@
-// import { useEffect } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Modal, Button } from "react-bootstrap";
+import Screen from "../pages/menu/screen";
 
 const Header = () => {
-    // const navigate = useNavigate();
-    // const isLogin = sessionStorage.getItem('isLogin');
-    // useEffect(() => {
-    //     if (isLogin == 'false') {
-    //         console.log('isLogin: ', isLogin)
-    //         navigate('/login', { replace: true });
-    //     }
-    // }, []);
+
+    const [show, setShow] = useState(false);
+    const handleClose = () => {
+        setShow(false);
+    }
+
+    const handleScreen = () => {
+        setShow(true);
+    }
+
     return (
         <>
             {/* <!-- Navbar --> */}
@@ -24,6 +27,22 @@ const Header = () => {
                     </li>
                     <li class="nav-item d-none d-sm-inline-block">
                         <a href="#" class="nav-link">Contact</a>
+                    </li>
+                    <li class="nav-item d-none d-sm-inline-block">
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav mr-auto">
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Menu
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="#" onClick={handleScreen}>Screen</a>
+                                        <a class="dropdown-item" href="#">Screen Permission</a>
+                                        <a class="dropdown-item" href="#">Menu Item</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                 </ul>
 
@@ -82,6 +101,10 @@ const Header = () => {
                     </li>
                 </ul>
             </nav>
+
+            <Screen show={show} handleClose={handleClose} />
+
+
         </>
     );
 };

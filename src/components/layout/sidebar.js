@@ -1,4 +1,7 @@
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
 
@@ -6,6 +9,39 @@ const Sidebar = () => {
     const [isConfig, setIsConfig] = useState(false);
     const loginUser = sessionStorage.getItem('userName');
     const userRole = sessionStorage.getItem('userRole');
+    const userRoleId = sessionStorage.getItem('userRoleId');
+    const [menus, setMenus] = useState([]);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        GetMenus();
+    }, []);
+
+    const GetMenus = async () => {
+        try {
+            const body = JSON.stringify({
+                role_id: userRoleId,
+                parent_id: 0
+            });
+
+            const response = await axios.post('http://127.0.0.1:8000/api/menus', body, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.data['status'] === 200) {
+                const menuData = response.data['mainMenus'];
+                setMenus(menuData)
+            }
+        } catch (error) {
+            setMenus([]);
+        }
+    }
+
+    console.log("Menus", menus)
 
     const handleClick = () => {
         setIsActive(!isActive);
@@ -14,6 +50,133 @@ const Sidebar = () => {
         setIsConfig(!isConfig);
 
     }
+
+    const handleMenu = (id, url) => {
+        console.log(url)
+        dispatch({ type: "LEVELMENUID", payload: id });
+    }
+
+    const handleNavigate = (e, url) => {
+        // e.preventDefault();
+        navigate(`${url}`);
+    }
+
+    const response = useSelector((state) => {
+        return state.moduleData;
+    });
+
+    console.log(response['levelMenuID']);
+
+    // const renderSubmenus = (submenus) => {
+    //     return (
+    //         <ul class="nav nav-treeview">
+    //             {
+    //                 submenus.map((submenu) => (
+    //                     <li key={submenu.miID} className={submenu.miID === response['levelMenuID'] ? 'nav-item menu-open' : 'nav-item'} onClick={() => handleMenu(submenu.miID)}>
+    //                         <a href="" className={(submenu.miID === response['levelMenuID']) || (location.pathname == submenu.url) ? 'nav-link active' : 'nav-link'} onClick={(e) => handleNavigate(e,submenu.url)}>
+    //                             <i class="far fa-compass nav-icon"></i>
+    //                             <p>
+    //                                 {submenu.menu_name}
+    //                                 {Array.isArray(submenu.subMenus) && submenu.subMenus.length > 0 ? (<i class="right fas fa-angle-left"></i>) : ""}
+    //                             </p>
+    //                         </a>
+    //                         {Array.isArray(submenu.subMenus) && renderChildSubmenus(submenu.subMenus)}
+
+    //                     </li>
+    //                 ))
+    //             }
+    //         </ul>
+    //     )
+    // }
+
+    // const renderChildSubmenus = (submenuss) => {
+    //     return (
+    //         <ul class="nav nav-treeview">
+    //             {
+    //                 submenuss.map((submenu) => (
+    //                     <li key={submenu.miID} className={submenu.miID === response['levelMenuID'] ? 'nav-item menu-open' : 'nav-item'} onClick={() => handleMenu(submenu.miID)}>
+    //                         <a href="" className={(submenu.miID === response['levelMenuID']) || (location.pathname == submenu.url) ? 'nav-link active' : 'nav-link'} onClick={(e) => handleNavigate(e,submenu.url)}>
+    //                             <i class="far fa-compass nav-icon"></i>
+    //                             <p>
+    //                                 {submenu.menu_name}
+
+    //                             </p>
+    //                         </a>
+
+    //                     </li>
+    //                 ))
+    //             }
+    //         </ul>
+    //     )
+    // }
+
+    // const MenuItem = ({ menu, handleMenu, response }) => {
+    //     const hasSubMenus = Array.isArray(menu.subMenus) && menu.subMenus.length > 0;
+
+    //     return (
+    //         <li key={menu.miID} className={menu.miID === response['levelMenuID'] ? "nav-item menu-open" : "nav-item"} onClick={(e) => handleMenu(menu.miID, menu.url)}>
+    //             <a href="javascript:void(0)" className={(menu.miID === response['levelMenuID']) || (location.pathname == menu.url) ? 'nav-link active' : 'nav-link'} onClick={(e) => handleNavigate(e,menu.url)}>
+    //                 <i className={menu.miID === response.levelMenuID ? "nav-icon fas fa-tachometer-alt" : "far fa-compass nav-icon"}></i>
+    //                 <p>
+    //                     {menu.menu_name}
+    //                     {hasSubMenus ? (<i className="right fas fa-angle-left"></i>) : ''}
+    //                 </p>
+    //             </a>
+    //             {
+    //                 hasSubMenus && <ul className="nav nav-treeview">
+    //                     {
+    //                         menu.subMenus.map((submenu) => (
+    //                             <MenuItem key={submenu.miID} menu={submenu} handleMenu={handleMenu} response={response} />
+    //                         ))
+    //                     }
+    //                 </ul>
+    //             }
+    //         </li>
+    //     );
+    // };
+
+    // Reusable component for menu items
+    const MenuItem = ({ menu, activeMenuId, onClick, handleNavigate }) => {
+        const isActive = menu.miID === activeMenuId || location.pathname === menu.url;
+        return (
+            <li key={menu.miID} className={isActive ? 'nav-item menu-open' : 'nav-item'} onClick={() => onClick(menu.miID)}>
+                <a href="javascript:void(0)" className={isActive ? 'nav-link active' : 'nav-link'} onClick={(e) => handleNavigate(e, menu.url)}>
+                    <i className="nav-icon fas fa-tachometer-alt"></i>
+                    <p>
+                        {menu.menu_name}
+                        {menu.subMenus.length > 0 && <i className="right fas fa-angle-left"></i>}
+                    </p>
+                </a>
+                {Array.isArray(menu.subMenus) && menu.subMenus.length > 0 && renderSubmenus(menu.subMenus, activeMenuId, onClick, handleNavigate)}
+            </li>
+        );
+    };
+
+    // Refactored renderSubmenus function
+    const renderSubmenus = (submenus, activeMenuId, onClick, handleNavigate) => (
+        <ul className="nav nav-treeview">
+            {submenus.map(submenu => (
+                <Submenu key={submenu.miID} submenu={submenu} activeMenuId={activeMenuId} onClick={onClick} handleNavigate={handleNavigate} />
+            ))}
+        </ul>
+    );
+
+    // Component to render submenus
+    const Submenu = ({ submenu, activeMenuId, onClick, handleNavigate }) => {
+        const isActive = submenu.miID === activeMenuId || location.pathname === submenu.url;
+        return (
+            <li key={submenu.miID} className={isActive ? 'nav-item menu-open' : 'nav-item'} onClick={() => onClick(submenu.miID)}>
+                <a href="javascript:void(0)" className={isActive ? 'nav-link active' : 'nav-link'} onClick={(e) => handleNavigate(e, submenu.url)}>
+                    <i className="far fa-compass nav-icon"></i>
+                    <p>
+                        {submenu.menu_name}
+                        {Array.isArray(submenu.subMenus) && submenu.subMenus.length > 0 && <i className="right fas fa-angle-left"></i>}
+                    </p>
+                </a>
+                {Array.isArray(submenu.subMenus) && submenu.subMenus.length > 0 && renderSubmenus(submenu.subMenus, activeMenuId, onClick, handleNavigate)}
+            </li>
+        );
+    };
 
     return (
         <>
@@ -50,84 +213,33 @@ const Sidebar = () => {
 
                     {/* <!-- Sidebar Menu --> */}
                     <nav class="mt-2">
-                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        {/* <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false"> */}
 
-                            <li class="nav-item">
-                                <a href="/" class="nav-link">
-                                    <i class="nav-icon fas fa-home"></i>
-                                    <p>
-                                        Home
-                                    </p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/users" class="nav-link">
-                                    <i class="nav-icon fas fa-users"></i>
-                                    <p>
-                                        Users
-                                    </p>
-                                </a>
-                            </li>
+                        {/* {
+                                menus.map((menu) => (
 
-                            <li class={isActive ? 'nav-item menu-open' : 'nav-item'} onClick={handleClick}>
-                                <a href="#" class={isActive ? 'nav-link active' : 'nav-link'}>
-                                    <i class="nav-icon fas fa-tachometer-alt"></i>
-                                    <p>
-                                        Dashboard
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="./index.html" class="nav-link active">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Dashboard v1</p>
+                                    <li key={menu.miID} className={menu.miID === response['levelMenuID'] ? "nav-item menu-open" : "nav-item"} onClick={() => handleMenu(menu.miID)}>
+                                        <a href="" className={(menu.miID === response['levelMenuID']) || (location.pathname == menu.url) ? 'nav-link active' : 'nav-link'} onClick={(e) => handleNavigate(e,menu.url)}>
+                                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                                            <p>{menu.menu_name}{menu.subMenus.length > 0 ? (<i class="right fas fa-angle-left"></i>) : ''}</p>
                                         </a>
+                                        {Array.isArray(menu.subMenus) && renderSubmenus(menu.subMenus)}
                                     </li>
-                                    <li class="nav-item">
-                                        <a href="./index2.html" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Dashboard v2</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="./index3.html" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Dashboard v3</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class={isConfig ? 'nav-item menu-open' : 'nav-item'} onClick={handleConfig}>
-                                <a href="#" class={isConfig ? 'nav-link active' : 'nav-link'}>
-                                    <i class="nav-icon fas fa-cog"></i>
-                                    <p>
-                                        Configurations
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="/category" class="nav-link">
-                                            <i class="nav-icon fas fa-folder"></i>
-                                            <p>Category</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="./index2.html" class="nav-link">
-                                            <i class="nav-icon fas fa-chart-bar"></i>
-                                            <p>Subcategory</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="./index3.html" class="nav-link">
-                                            <i class="nav-icon fas fa-gift"></i>
-                                            <p>Items</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
+                                ))
+                            } */}
 
+                        {/* {
+                                menus.map((menu) => (
+                                    <MenuItem key={menu.miID} menu={menu} handleMenu={handleMenu} response={response}/>
+                                ))
+                            } */}
+
+                        {/* </ul> */}
+
+                        <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            {menus.map(menu => (
+                                <MenuItem key={menu.miID} menu={menu} activeMenuId={response['levelMenuID']} onClick={handleMenu} handleNavigate={handleNavigate} />
+                            ))}
                         </ul>
                     </nav>
                     {/* <!-- /.sidebar-menu --> */}
