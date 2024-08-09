@@ -32,7 +32,9 @@ const ScreenList = () => {
     }, []);
 
     const getScreens = async () => {
+
         const response = await axios.get('http://127.0.0.1:8000/api/screens', {
+            
             headers: {
                 'Content-Type': 'application/json'
             }

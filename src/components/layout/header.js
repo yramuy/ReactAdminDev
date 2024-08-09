@@ -1,16 +1,23 @@
 import { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import Screen from "../pages/menu/screen";
+import { useDispatch } from "react-redux";
 
 const Header = () => {
 
     const [show, setShow] = useState(false);
+    const [text, setText] = useState('');
+    const dispatch = useDispatch();
+
     const handleClose = () => {
         setShow(false);
     }
 
-    const handleScreen = () => {
+    const handleScreen = (value) => {
         setShow(true);
+        setText(value);
+        dispatch({ type: "STATUS", payload: true });
+        dispatch({ type: "ID", payload: 0 });
     }
 
     return (
@@ -36,9 +43,9 @@ const Header = () => {
                                         Menu
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item" href="#" onClick={handleScreen}>Screen</a>
-                                        <a class="dropdown-item" href="#">Screen Permission</a>
-                                        <a class="dropdown-item" href="#">Menu Item</a>
+                                        <a class="dropdown-item" href="#" onClick={() => handleScreen('Screen')}>Screen</a>
+                                        <a class="dropdown-item" href="#" onClick={() => handleScreen('Screen Permission')}>Screen Permission</a>
+                                        <a class="dropdown-item" href="#" onClick={() => handleScreen('Menu Item')}>Menu Item</a>
                                     </div>
                                 </li>
                             </ul>
@@ -102,7 +109,7 @@ const Header = () => {
                 </ul>
             </nav>
 
-            <Screen show={show} handleClose={handleClose} />
+            <Screen show={show} handleClose={handleClose} text={text}/>
 
 
         </>

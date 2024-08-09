@@ -2,7 +2,10 @@ import { combineReducers } from "redux";
 
 const initialState = {
     message: "",
-    levelMenuID: ""
+    levelMenuID: "",
+    data: [],
+    status: "",
+    id: 0
 };
 
 function ModuleReducer(state = initialState, action) {
@@ -13,6 +16,12 @@ function ModuleReducer(state = initialState, action) {
             return { ...state, message: payload }
         case "LEVELMENUID":
             return { ...state, levelMenuID: payload }
+        case "DATA":
+            return { ...state, data: payload }
+        case "STATUS":
+            return { ...state, status: payload }
+        case "ID":
+            return { ...state, id: payload }
 
         default:
             return state;
